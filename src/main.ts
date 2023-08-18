@@ -9,7 +9,7 @@ async function start() {
   const config = new DocumentBuilder()
     .setTitle("DMINC API")
     .setDescription("Документация текущего DMINC API")
-    .setVersion("1.0.0")
+    .setVersion("0.1.0")
     .addTag("dev")
     .build();
   const document = SwaggerModule.createDocument(app, config);
