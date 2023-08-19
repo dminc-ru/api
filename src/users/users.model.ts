@@ -51,6 +51,20 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @ApiProperty({
     example: "true",
+    description: "Активирован ли аккаунт пользователя",
+  })
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  isActivated: boolean;
+
+  @ApiProperty({
+    example: "https://example.com/activate/123456",
+    description: "Ссылка для активации аккаунта",
+  })
+  @Column({ type: DataType.STRING })
+  activationLink: string;
+
+  @ApiProperty({
+    example: "true",
     description: "Наличие блокировки у пользователя",
   })
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
