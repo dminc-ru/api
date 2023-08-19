@@ -21,32 +21,28 @@ export class UsersService {
   }
 
   async getAllUsers() {
-    const users = await this.userRepository.findAll({ include: { all: true } });
-    return users;
+    return await this.userRepository.findAll({ include: { all: true } });
   }
 
   async getUserByEmail(email: string) {
-    const user = await this.userRepository.findOne({
+    return await this.userRepository.findOne({
       where: { email },
       include: { all: true },
     });
-    return user;
   }
 
   async getUserByActivation(activationLink: string) {
-    const user = await this.userRepository.findOne({
+    return await this.userRepository.findOne({
       where: { activationLink },
       include: { all: true },
     });
-    return user;
   }
 
   async getUserById(id: number) {
-    const user = await this.userRepository.findOne({
+    return await this.userRepository.findOne({
       where: { id },
       include: { all: true },
     });
-    return user;
   }
 
   async addRole(dto: AddRoleDto) {

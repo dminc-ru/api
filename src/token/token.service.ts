@@ -30,28 +30,25 @@ export class TokenService {
 
   async refreshAccessToken(user: UserDto) {
     const payloadAccess = { email: user.email, id: user.id, roles: user.roles };
-    const accessToken = this.jwtService.sign(payloadAccess, {
+    return this.jwtService.sign(payloadAccess, {
       secret: process.env.PRIVATE_KEY,
     });
-    return accessToken;
   }
 
   async validateAccessToken(token) {
     try {
-      const userData = this.jwtService.verify(token, {
+      return this.jwtService.verify(token, {
         secret: process.env.PRIVATE_KEY,
       });
-      return userData;
     } catch (e) {
       return null;
     }
   }
   async validateRefreshToken(token) {
     try {
-      const userData = this.jwtService.verify(token, {
+      return this.jwtService.verify(token, {
         secret: process.env.REFRESH_PRIVATE_KEY,
       });
-      return userData;
     } catch (e) {
       return null;
     }
@@ -65,23 +62,21 @@ export class TokenService {
       tokenData.refreshToken = refreshToken;
       return tokenData.save();
     }
-    const token = await this.tokenRepository.create({
+    return await this.tokenRepository.create({
       user: userId,
       refreshToken,
     });
-    return token;
   }
 
   async removeToken(refreshToken) {
-    const tokenData = await this.tokenRepository.destroy({
+    await this.tokenRepository.destroy({
       where: { refreshToken },
     });
   }
 
   async findToken(refreshToken) {
-    const tokenData = await this.tokenRepository.findOne({
+    return await this.tokenRepository.findOne({
       where: { refreshToken },
     });
-    return tokenData;
   }
 }

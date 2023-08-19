@@ -33,8 +33,7 @@ export class AuthService {
   }
 
   async logout(@Body() userDto: CreateUserDto, refreshToken: string) {
-    const token = await this.tokenService.removeToken(refreshToken);
-    return token;
+    return await this.tokenService.removeToken(refreshToken);
   }
 
   async refresh(refreshToken: string) {
