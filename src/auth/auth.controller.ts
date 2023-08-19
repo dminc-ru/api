@@ -51,9 +51,13 @@ export class AuthController {
   }
 
   @Get("/refresh")
-  refresh() {
-    // TODO: Ensure that refresh tokens are implemented
-    return undefined;
+  async refresh(@Req() request: Request) {
+    const { refreshToken } = request.cookies;
+    const userData = await this.authService.refresh(refreshToken);
+    return {
+      accessToken: userData.accessToken,
+      refreshToken: userData.refreshToken,
+    };
   }
 
   @Get("/activate/:link")

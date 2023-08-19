@@ -22,7 +22,14 @@ export class AuthService {
   ) {}
   async login(@Body() userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    return this.tokenService.generateTokens(user);
+    const { accessToken, refreshToken } =
+      await this.tokenService.generateTokens(user);
+    await this.tokenService.saveToken(user.id, refreshToken);
+    return {
+      accessToken,
+      refreshToken,
+      user: userDto,
+    };
   }
 
   async logout(@Body() userDto: CreateUserDto, refreshToken: string) {
@@ -30,9 +37,22 @@ export class AuthService {
     return token;
   }
 
-  async refresh() {
-    // TODO: Implement refresh tokens
-    return undefined;
+  async refresh(refreshToken: string) {
+    const userData = await this.tokenService.validateRefreshToken(refreshToken);
+    const tokenFromDb = await this.tokenService.findToken(refreshToken);
+    if (!userData || !tokenFromDb) {
+      throw new UnauthorizedException("Пользователь не авторизован");
+    }
+    const user = await this.userService.getUserById(userData.id);
+    const newUserDto = new UserDto(user);
+    const accessToken = await this.tokenService.refreshAccessToken({
+      ...newUserDto,
+    });
+    return {
+      accessToken,
+      refreshToken,
+      user: newUserDto,
+    };
   }
 
   async activate(activationLink) {

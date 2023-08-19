@@ -27,6 +27,36 @@ export class TokenService {
       refreshToken,
     };
   }
+
+  async refreshAccessToken(user: UserDto) {
+    const payloadAccess = { email: user.email, id: user.id, roles: user.roles };
+    const accessToken = this.jwtService.sign(payloadAccess, {
+      secret: process.env.PRIVATE_KEY,
+    });
+    return accessToken;
+  }
+
+  async validateAccessToken(token) {
+    try {
+      const userData = this.jwtService.verify(token, {
+        secret: process.env.PRIVATE_KEY,
+      });
+      return userData;
+    } catch (e) {
+      return null;
+    }
+  }
+  async validateRefreshToken(token) {
+    try {
+      const userData = this.jwtService.verify(token, {
+        secret: process.env.REFRESH_PRIVATE_KEY,
+      });
+      return userData;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async saveToken(userId, refreshToken) {
     const tokenData = await this.tokenRepository.findOne({
       where: { user: userId },
@@ -46,5 +76,12 @@ export class TokenService {
     const tokenData = await this.tokenRepository.destroy({
       where: { refreshToken },
     });
+  }
+
+  async findToken(refreshToken) {
+    const tokenData = await this.tokenRepository.findOne({
+      where: { refreshToken },
+    });
+    return tokenData;
   }
 }
