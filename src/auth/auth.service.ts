@@ -12,6 +12,7 @@ import * as uuid from "uuid";
 import { MailService } from "../mail/mail.service";
 import { TokenService } from "../token/token.service";
 import { UserDto } from "../users/dto/user.dto";
+import { UserAuthDto } from "./dto/user-auth.dto";
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     private tokenService: TokenService,
     private mailService: MailService,
   ) {}
-  async login(@Body() userDto: CreateUserDto) {
+  async login(@Body() userDto: UserAuthDto) {
     const user = await this.validateUser(userDto);
     const { accessToken, refreshToken } =
       await this.tokenService.generateTokens(user);
@@ -32,7 +33,7 @@ export class AuthService {
     };
   }
 
-  async logout(@Body() userDto: CreateUserDto, refreshToken: string) {
+  async logout(refreshToken: string) {
     return await this.tokenService.removeToken(refreshToken);
   }
 
@@ -92,7 +93,7 @@ export class AuthService {
     };
   }
 
-  private async validateUser(userDto: CreateUserDto) {
+  private async validateUser(userDto: UserAuthDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
     if (!user) {
       throw new UnauthorizedException({
