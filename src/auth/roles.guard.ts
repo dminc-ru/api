@@ -38,7 +38,9 @@ export class RolesGuard implements CanActivate {
           message: "Пользователь не авторизован",
         });
       }
-      const user = this.jwtService.verify(token);
+      const user = this.jwtService.verify(token, {
+        secret: process.env.PRIVATE_KEY,
+      });
       req.user = user;
       return user.roles.some((role) => requiredRoles.includes(role.value));
     } catch (e) {
