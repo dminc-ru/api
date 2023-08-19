@@ -18,7 +18,7 @@ interface UserCreationAttrs {
 export class User extends Model<User, UserCreationAttrs> {
   @ApiProperty({
     example: "1",
-    description: "Уникальный идентификатор пользователя",
+    description: "Уникальный идентификатор DMINC ID",
   })
   @Column({
     type: DataType.INTEGER,
@@ -30,7 +30,7 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @ApiProperty({
     example: "kentithun1",
-    description: "Уникальное имя пользователя",
+    description: "Уникальное имя DMINC ID",
   })
   @Column({
     type: DataType.STRING,
@@ -40,39 +40,40 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @ApiProperty({
     example: "kentithun1@dminc.ru",
-    description: "Адрес электронного ящика пользователя",
+    description: "Адрес электронного ящика DMINC ID",
   })
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   email: string;
 
-  @ApiProperty({ example: "qwerty12345", description: "Пароль пользователя" })
+  @ApiProperty({ example: "qwerty12345", description: "Пароль DMINC ID" })
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
 
   @ApiProperty({
-    example: "true",
-    description: "Активирован ли аккаунт пользователя",
+    example: "false",
+    description: "Наличие активации DMINC ID",
   })
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   isActivated: boolean;
 
   @ApiProperty({
-    example: "https://example.com/activate/123456",
-    description: "Ссылка для активации аккаунта",
+    example:
+      "https://id.dminc.ru/api/auth/activate/abcdef-fedcba-abcfed-cbadef",
+    description: "Ссылка для активации DMINC ID",
   })
   @Column({ type: DataType.STRING })
   activationLink: string;
 
   @ApiProperty({
-    example: "true",
-    description: "Наличие блокировки у пользователя",
+    example: "false",
+    description: "Наличие блокировки DMINC ID",
   })
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   banned: boolean;
 
   @ApiProperty({
-    example: "Нарушение Пользовательского соглашения dminc",
-    description: "Причина блокировки пользователя (при её наличии)",
+    example: "",
+    description: "Причина блокировки DMINC ID (при её наличии)",
   })
   @Column({ type: DataType.STRING, allowNull: true })
   banReason: string;

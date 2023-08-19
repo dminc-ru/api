@@ -16,12 +16,12 @@ import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
 import { ValidationPipe } from "../pipes/validation.pipe";
 
-@ApiTags("Пользователи")
+@ApiTags("Управление DMINC ID")
 @Controller("/users")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({ summary: "Создание пользователя" })
+  @ApiOperation({ summary: "Создание DMINC ID" })
   @ApiResponse({ status: 200, type: User })
   @UsePipes(ValidationPipe)
   @Post()
@@ -29,26 +29,26 @@ export class UsersController {
     return this.usersService.createUser(userDto);
   }
 
-  @ApiOperation({ summary: "Получение всех пользователей" })
+  @ApiOperation({ summary: "Получение всех DMINC ID" })
   @ApiResponse({ status: 200, type: [User] })
-  @Roles("ADMIN")
+  @Roles("admin")
   @UseGuards(RolesGuard)
   @Get()
   getAll() {
     return this.usersService.getAllUsers();
   }
 
-  @ApiOperation({ summary: "Выдача роли" })
+  @ApiOperation({ summary: "Выдача роли аккаунту DMINC ID" })
   @ApiResponse({ status: 200 })
-  @Roles("ADMIN")
+  @Roles("admin")
   @UseGuards(RolesGuard)
   @Post("/role")
   addRole(@Body() dto: AddRoleDto) {
     return this.usersService.addRole(dto);
   }
-  @ApiOperation({ summary: "Забанить пользователя" })
+  @ApiOperation({ summary: "Блокировка DMINC ID" })
   @ApiResponse({ status: 200 })
-  @Roles("ADMIN")
+  @Roles("admin")
   @UseGuards(RolesGuard)
   @Post("/ban")
   ban(@Body() dto: BanUserDto) {
