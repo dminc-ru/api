@@ -7,19 +7,42 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { UsersService } from "../users/users.service";
-import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
-import { User } from "../users/users.model";
+import * as uuid from "uuid";
+import { MailService } from "../mail/mail.service";
+import { TokenService } from "../token/token.service";
+import { UserDto } from "../users/dto/user.dto";
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private jwtService: JwtService,
+    private tokenService: TokenService,
+    private mailService: MailService,
   ) {}
   async login(@Body() userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    return this.generateToken(user);
+    return this.tokenService.generateTokens(user);
+  }
+
+  async logout(@Body() userDto: CreateUserDto, refreshToken: string) {
+    const token = await this.tokenService.removeToken(refreshToken);
+    return token;
+  }
+
+  async refresh() {
+    // TODO: Implement refresh tokens
+    return undefined;
+  }
+
+  async activate(activationLink) {
+    const user = await this.userService.getUserByActivation(activationLink);
+    if (!user) {
+      throw new Error("Некорректная ссылка активации");
+    }
+    user.isActivated = true;
+    await user.save();
+    return undefined;
   }
 
   async register(@Body() userDto: CreateUserDto) {
@@ -30,23 +53,32 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    const activationCode = uuid.v4();
+    const activationLink = `http://localhost:5000/activate/${activationCode}`;
     const hashPassword = await bcrypt.hash(userDto.password, 5);
     const user = await this.userService.createUser({
       ...userDto,
       password: hashPassword,
+      activationLink: activationCode,
     });
-    return this.generateToken(user);
-  }
+    await this.mailService.sendActivationMail(user.email, activationLink);
 
-  private async generateToken(user: User) {
-    const payload = { email: user.email, id: user.id, roles: user.roles };
+    const newUserDto = new UserDto(user);
+    const tokens = await this.tokenService.generateTokens({ ...newUserDto });
+    await this.tokenService.saveToken(newUserDto.id, tokens.refreshToken);
     return {
-      token: this.jwtService.sign(payload),
+      ...tokens,
+      user: newUserDto,
     };
   }
 
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
+    if (!user) {
+      throw new UnauthorizedException({
+        message: "Некорректный email или пароль",
+      });
+    }
     const passwordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
