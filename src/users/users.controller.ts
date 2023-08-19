@@ -15,6 +15,8 @@ import { Roles } from "../auth/roles-auth.decorator";
 import { AddRoleDto } from "./dto/add-role.dto";
 import { BanUserDto } from "./dto/ban-user.dto";
 import { ValidationPipe } from "../pipes/validation.pipe";
+import { UserRoles } from "../roles/user-roles.model";
+import { UserBannedDto } from "./dto/user-banned.dto";
 
 @ApiTags("Управление DMINC ID")
 @Controller("/users")
@@ -39,7 +41,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: "Выдача роли аккаунту DMINC ID" })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, type: UserRoles })
   @Roles("admin")
   @UseGuards(RolesGuard)
   @Post("/role")
@@ -47,7 +49,7 @@ export class UsersController {
     return this.usersService.addRole(dto);
   }
   @ApiOperation({ summary: "Блокировка DMINC ID" })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 200, type: UserBannedDto })
   @Roles("admin")
   @UseGuards(RolesGuard)
   @Post("/ban")
