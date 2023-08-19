@@ -16,11 +16,4 @@ export class CreateUserDto {
   @IsString({ message: "Должно быть строкой" })
   @Length(4, 16, { message: "Не меньше 4 и не больше 16" })
   readonly password: string;
-
-  @ApiProperty({
-    example:
-      "https://example.com/auth/activate/324jjsd-sdfsdf-cbcvb-zzxxz-zxgfhdfh",
-  })
-  @IsString({ message: "Должно быть строкой" })
-  readonly activationLink: string;
 }
