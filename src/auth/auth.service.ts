@@ -78,8 +78,9 @@ export class AuthService {
     const user = await this.userService.createUser({
       ...userDto,
       password: hashPassword,
-      activationLink: activationCode,
     });
+    user.activationLink = activationCode;
+    await user.save();
     await this.mailService.sendActivationMail(user.email, activationLink);
 
     const newUserDto = new UserDto(user);
