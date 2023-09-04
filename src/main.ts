@@ -8,7 +8,12 @@ async function start() {
   const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
-  app.use(cors());
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:3000",
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle("DMINC API")
