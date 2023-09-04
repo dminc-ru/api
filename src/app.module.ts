@@ -9,6 +9,7 @@ import { UserRoles } from "./roles/user-roles.model";
 import { AuthModule } from "./auth/auth.module";
 import { TokenModule } from "./token/token.module";
 import { MailModule } from "./mail/mail.module";
+import { PayModule } from "./pay/pay.module";
 
 @Module({
   controllers: [],
@@ -32,6 +33,7 @@ import { MailModule } from "./mail/mail.module";
     AuthModule,
     TokenModule,
     MailModule,
+    PayModule,
   ],
 })
 export class AppModule {}
