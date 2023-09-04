@@ -22,15 +22,30 @@ export class AuthService {
     private mailService: MailService,
   ) {}
   async login(@Body() userDto: UserAuthDto) {
-    const user = await this.validateUser(userDto);
-    const { accessToken, refreshToken } =
-      await this.tokenService.generateTokens(user);
-    await this.tokenService.saveToken(user.id, refreshToken);
-    return {
-      accessToken,
-      refreshToken,
-      user: userDto,
-    };
+    try {
+      var user = await this.validateUser(userDto);
+    } catch (e) {
+      throw new HttpException(
+        "Некорректный формат данных",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      const { accessToken, refreshToken } =
+        await this.tokenService.generateTokens(user);
+      await this.tokenService.saveToken(user.id, refreshToken);
+
+      return {
+        accessToken,
+        refreshToken,
+        user: userDto,
+      };
+    } catch (e) {
+      throw new HttpException(
+        "Ошибка при генерации токенов",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async logout(refreshToken: string) {
